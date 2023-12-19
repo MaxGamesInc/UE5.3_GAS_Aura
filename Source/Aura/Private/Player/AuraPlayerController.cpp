@@ -4,6 +4,8 @@
 #include "Player/AuraPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Interaction/EnemyInterface.h"
+
 
 
 
@@ -12,12 +14,58 @@ AAuraPlayerController::AAuraPlayerController()
     bReplicates = true;
 
 }
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+    Super::PlayerTick(DeltaTime);
+    CursorTrace();
 
-void AAuraPlayerController::BeginPlay()
+}
+void AAuraPlayerController::CursorTrace()
+{
+    FHitResult CursorHit;
+    GetHitResultUnderCursor(ECC_Visibility,false,CursorHit);
+    if(!CursorHit.bBlockingHit) return;
+    LastActor = ThisActor;
+    ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
+    
+    /*
+    *Line Trace from cursor . There are several scenarios:
+        A.LastActor is null && ThisActor is null (Nothing was traced , Nothing is being traced)
+        -> Do Nothing 
+        B. LastActor is null && ThisActor is valid (Nothing was traced , Something is being traced)
+        -> Highlight ThisActor
+        C. LastActor is valid && ThisActor is null (Something was traced ,Nothing is being traced)
+        -> UnHighlight LastActor
+        D. Both Actors are Valid , but Last Actor != This Actor (Something was Traced , Something is being traced , but Something was traced and Something being traced is not same Actor)
+        -> UnHighlight LastActor, Highlight ThisActor
+        E. Both Actors are Valid , but Last Actor == This Actor (Something was Traced , Something is being traced , and both actors are same)
+        -> Do Nothing
+    */
+   if (ThisActor != LastActor)
+   {
+    // Covers case A,B,C, and E
+        if(LastActor != nullptr)
+        {
+            // Case C
+            LastActor->UnHighlightActor();
+            
+        }
+        if(ThisActor != nullptr)
+        {
+            // Case B
+            ThisActor->HighlightActor();
+        }
+        // Case A and E has Nothing to Do , so no if checks.
+   }
+
+
+}
+
+void AAuraPlayerController::BeginPlay() 
 {
     Super::BeginPlay();
 
-    check(AuraContext);
+    check(AuraContext); 
     UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
     check(Subsystem);
     Subsystem->AddMappingContext(AuraContext,0);
