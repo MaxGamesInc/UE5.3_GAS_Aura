@@ -3,6 +3,7 @@
 
 #include "Characters/AuraCharacterBase.h"
 
+
 // Sets default values
 AAuraCharacterBase::AAuraCharacterBase()
 {
@@ -13,6 +14,10 @@ AAuraCharacterBase::AAuraCharacterBase()
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
+{
+    return AbilitySystemComponent;
+}
 
 void AAuraCharacterBase::BeginPlay()
 {
@@ -21,3 +26,4 @@ void AAuraCharacterBase::BeginPlay()
 }
 
 
+ 
