@@ -4,8 +4,10 @@
 #include "Characters/AuraCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+
 AURA_API AAuraCharacter::AAuraCharacter()
 {
+  
   GetCharacterMovement()->bOrientRotationToMovement = true;
   GetCharacterMovement()->bUseControllerDesiredRotation = false;
   GetCharacterMovement()->RotationRate = FRotator(0.f,400.f,0.f);
@@ -14,5 +16,5 @@ AURA_API AAuraCharacter::AAuraCharacter()
     bUseControllerRotationPitch = false; 
     bUseControllerRotationRoll = false;
     bUseControllerRotationYaw = false;
-
 }
+

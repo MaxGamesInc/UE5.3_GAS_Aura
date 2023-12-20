@@ -8,7 +8,6 @@
 
 
 
-
 AAuraPlayerController::AAuraPlayerController()
 {
     bReplicates = true;
@@ -28,35 +27,25 @@ void AAuraPlayerController::CursorTrace()
     LastActor = ThisActor;
     ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
     
-    /*
-    *Line Trace from cursor . There are several scenarios:
-        A.LastActor is null && ThisActor is null (Nothing was traced , Nothing is being traced)
-        -> Do Nothing 
-        B. LastActor is null && ThisActor is valid (Nothing was traced , Something is being traced)
-        -> Highlight ThisActor
-        C. LastActor is valid && ThisActor is null (Something was traced ,Nothing is being traced)
-        -> UnHighlight LastActor
-        D. Both Actors are Valid , but Last Actor != This Actor (Something was Traced , Something is being traced , but Something was traced and Something being traced is not same Actor)
-        -> UnHighlight LastActor, Highlight ThisActor
-        E. Both Actors are Valid , but Last Actor == This Actor (Something was Traced , Something is being traced , and both actors are same)
-        -> Do Nothing
-    */
+
    if (ThisActor != LastActor)
    {
-    // Covers case A,B,C, and E
         if(LastActor != nullptr)
         {
-            // Case C
+  
             LastActor->UnHighlightActor();
             
         }
         if(ThisActor != nullptr)
         {
-            // Case B
+  
             ThisActor->HighlightActor();
         }
-        // Case A and E has Nothing to Do , so no if checks.
+
    }
+   
+
+   
 
 
 }
@@ -83,6 +72,7 @@ void AAuraPlayerController::SetupInputComponent()
     UEnhancedInputComponent* EnhancedInputComponent =CastChecked<UEnhancedInputComponent>(InputComponent);
     EnhancedInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,this,&AAuraPlayerController::Move);
     EnhancedInputComponent->BindAction(LookAction,ETriggerEvent::Triggered,this,&AAuraPlayerController::Look);
+    EnhancedInputComponent->BindAction(ToggleCombatModeAction,ETriggerEvent::Triggered,this,&AAuraPlayerController::ToggleCombatMode);
 }
 void AAuraPlayerController::Move(const FInputActionValue &InputActionValue)
 {
@@ -100,7 +90,7 @@ void AAuraPlayerController::Move(const FInputActionValue &InputActionValue)
     }
 
 }
-void AAuraPlayerController::Look(const FInputActionValue & InputActionValue)
+void AAuraPlayerController::Look(const FInputActionValue &InputActionValue)
 {
 const FVector2D LookAxisVector = InputActionValue.Get<FVector2D>();
 	if (APawn* ControlledPawn = GetPawn<APawn>())
@@ -110,5 +100,11 @@ const FVector2D LookAxisVector = InputActionValue.Get<FVector2D>();
 		ControlledPawn->AddControllerYawInput(LookAxisVector.X);
  
 	}
+}
+
+void AAuraPlayerController::ToggleCombatMode(const FInputActionValue &InputActionValue)
+{
+    const bool CombatModeToggle = InputActionValue.Get<bool>();
+   
 }
 
